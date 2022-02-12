@@ -1,0 +1,43 @@
+on: [push, pull_request]
+name: ci
+jobs:
+  linux-ci:
+    name: linux-${{ matrix.name }}
+    runs-on: ubuntu-20.04
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: gcc-10
+            compiler: gcc
+            version: 10
+
+          - name: clang-12
+            compiler: clang
+            version: 12
+
+    steps:
+    - name: Set up gcc env
+      if: startsWith(matrix.compiler, 'gcc')
+      run: |
+        echo "CC=gcc-${{ matrix.version }}" >> $GITHUB_ENV
+        echo "CXX=g++-${{ matrix.version }}" >> $GITHUB_ENV
+    - name: Set up clang env
+      if: startsWith(matrix.compiler, 'clang')
+      run: |
+        echo "CC=clang-${{ matrix.version }}" >> $GITHUB_ENV
+        echo "CXX=clang++-${{ matrix.version }}" >> $GITHUB_ENV
+    - uses: actions/checkout@v2
+    - name: Build and test
+      run: bazel test ... --config gnulike
+
+  windows-msvc:
+    runs-on: windows-2022
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build and test
+      run: bazel test ... --config msvc
