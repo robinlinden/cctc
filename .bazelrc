@@ -4,6 +4,11 @@
 
 build --incompatible_disallow_empty_glob
 
+# Bazel configuration
+# =========================================================
+
+test --test_output=errors
+
 # Compiler configuration
 # =========================================================
 
