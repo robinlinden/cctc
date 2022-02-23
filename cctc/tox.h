@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <vector>
 
 namespace cctc {
 
@@ -41,12 +42,24 @@ private:
     std::array<std::uint8_t, kByteSize> bytes_;
 };
 
+struct Savedata {
+    enum class Type {
+        None,
+        ToxSave,
+        SecretKey,
+    };
+
+    Type type{Type::None};
+    std::vector<std::uint8_t> data{};
+};
+
 class Tox {
 public:
-    Tox();
+    Tox(Savedata const & = {});
     ~Tox();
 
     [[nodiscard]] ToxID self_get_address() const;
+    [[nodiscard]] std::vector<std::uint8_t> get_savedata() const;
 
 private:
     class Impl;
