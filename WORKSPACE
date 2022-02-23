@@ -22,6 +22,14 @@ http_archive(
 )
 
 http_archive(
+    name = "msgpack-c",  # BSL-1.0
+    build_file = "//third_party:msgpack-c.BUILD",
+    sha256 = "420fe35e7572f2a168d17e660ef981a589c9cbe77faa25eb34a520e1fcc032c8",
+    strip_prefix = "msgpack-c-4.0.0",
+    url = "https://github.com/msgpack/msgpack-c/releases/download/c-4.0.0/msgpack-c-4.0.0.tar.gz",
+)
+
+http_archive(
     name = "pthread",  # LGPL-2.1-only
     build_file = "//third_party:pthread.BUILD",
     sha256 = "e6aca7aea8de33d9c8580bcb3a0ea3ec0a7ace4ba3f4e263ac7c7b66bc95fb4d",
@@ -32,11 +40,11 @@ http_archive(
 http_archive(
     name = "toxcore",  # GPL-3.0-or-later
     build_file = "//third_party:toxcore.BUILD",
-    sha256 = "577e23fe52f8be6739a9fffb2b16bfefd3a0ef4994d0714cb28a1ecca3669ca6",
     patch_cmds = [
         "rm toxcore/BUILD.bazel",
         "rm toxencryptsave/BUILD.bazel",
     ],
-    strip_prefix = "c-toxcore-0.2.15",
-    url = "https://github.com/TokTok/c-toxcore/archive/v0.2.15.tar.gz",
+    sha256 = "653aa42654b607f0940cecfac873e9ce55605119a90d1dc454d1090ff6ca29c0",
+    strip_prefix = "c-toxcore-0.2.16",
+    url = "https://github.com/TokTok/c-toxcore/archive/v0.2.16.tar.gz",
 )

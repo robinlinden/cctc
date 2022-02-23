@@ -13,6 +13,8 @@ cc_library(
     srcs = glob([
         "toxcore/*.c",
         "toxcore/*.h",
+        "toxcore/events/*.c",
+        "toxcore/events/*.h",
     ]),
     hdrs = ["toxcore/tox.h"],
     include_prefix = "tox",
@@ -32,6 +34,7 @@ cc_library(
     deps = [
         ":toxencryptsave_defines",
         "@libsodium",
+        "@msgpack-c",
         "@pthread",
     ],
 )
