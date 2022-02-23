@@ -6,20 +6,27 @@
 #include <iostream>
 #include <utility>
 
-int main() {
-    std::cout << cctc::toxcore_version() << '\n';
+namespace {
+
+bool test_tox_id() {
     cctc::Tox tox;
 
     auto id = tox.self_get_address();
-    std::cout << id.to_string();
 
     auto bytes = id.bytes();
     std::array<std::uint8_t, cctc::ToxID::kByteSize> new_tox_id_bytes;
     std::copy(bytes.begin(), bytes.end(), new_tox_id_bytes.begin());
     auto new_id = cctc::ToxID{std::move(new_tox_id_bytes)};
 
-    if (new_id != id) {
-        std::cout << "Copying ToxID using bytes() didn't work\n";
+    return new_id == id;
+}
+
+} // namespace
+
+int main() {
+    std::cout << cctc::toxcore_version() << '\n';
+    if (!test_tox_id()) {
+        std::cout << "ToxID is broken.\n";
         return 1;
     }
 }
