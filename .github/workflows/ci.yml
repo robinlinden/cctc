@@ -41,3 +41,14 @@ jobs:
     - uses: actions/checkout@v2
     - name: Build and test
       run: bazel test ... --config msvc
+
+  buildifier:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install
+      run: |
+        wget --output-document=buildifier https://github.com/bazelbuild/buildtools/releases/download/5.0.1/buildifier-linux-amd64
+        sudo chmod +x buildifier
+    - name: Check
+      run: ./buildifier --lint=warn --warnings=all -mode diff WORKSPACE $(find . -type f -iname "*.BUILD" -or -iname BUILD)
