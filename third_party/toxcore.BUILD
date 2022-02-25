@@ -16,7 +16,10 @@ cc_library(
         "toxcore/events/*.c",
         "toxcore/events/*.h",
     ]),
-    hdrs = ["toxcore/tox.h"],
+    hdrs = [
+        "toxcore/tox.h",
+        "toxcore/tox_events.h",
+    ],
     include_prefix = "tox",
     linkopts = select({
         "@platforms//os:linux": [],

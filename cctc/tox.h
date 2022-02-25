@@ -11,6 +11,7 @@
 #include <sstream>
 #include <string>
 #include <utility>
+#include <variant>
 #include <vector>
 
 namespace cctc {
@@ -85,10 +86,34 @@ struct Savedata {
     std::vector<std::uint8_t> data{};
 };
 
+enum class ToxErrBootstrap {
+    Ok,
+    Null,
+    BadHost,
+    BadPort,
+};
+
+enum class Connection {
+    None,
+    Tcp,
+    Udp,
+};
+
+struct SelfConnectionStatusEvent {
+    Connection connection{Connection::None};
+};
+
+using ToxEvent = std::variant<SelfConnectionStatusEvent>;
+
 class Tox {
 public:
     Tox(Savedata const & = {});
     ~Tox();
+
+    ToxErrBootstrap bootstrap(std::string const &host, std::uint16_t port, PublicKey const &);
+
+    [[nodiscard]] std::uint32_t iteration_interval() const;
+    [[nodiscard]] std::vector<ToxEvent> events_iterate();
 
     [[nodiscard]] ToxID self_get_address() const;
     [[nodiscard]] std::vector<std::uint8_t> get_savedata() const;
