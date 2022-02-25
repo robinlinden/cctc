@@ -21,6 +21,20 @@ bool test_tox_id() {
     return new_id == id;
 }
 
+bool test_public_key() {
+    cctc::Tox tox;
+
+    auto id = tox.self_get_address();
+    auto pk = cctc::PublicKey{id};
+
+    auto bytes = pk.bytes();
+    std::array<std::uint8_t, cctc::PublicKey::kByteSize> new_bytes;
+    std::copy(bytes.begin(), bytes.end(), new_bytes.begin());
+    auto new_pk = cctc::PublicKey{std::move(new_bytes)};
+
+    return pk == new_pk;
+}
+
 bool test_saving_and_loading() {
     cctc::Tox tox;
     auto id = tox.self_get_address();
@@ -37,6 +51,11 @@ int main() {
     std::cout << cctc::toxcore_version() << '\n';
     if (!test_tox_id()) {
         std::cout << "ToxID is broken.\n";
+        return 1;
+    }
+
+    if (!test_public_key()) {
+        std::cout << "PublicKey is broken.\n";
         return 1;
     }
 
