@@ -7,6 +7,7 @@
 #include <cstring>
 #include <iomanip>
 #include <memory>
+#include <optional>
 #include <span>
 #include <sstream>
 #include <string>
@@ -117,6 +118,9 @@ public:
 
     [[nodiscard]] ToxID self_get_address() const;
     [[nodiscard]] std::vector<std::uint8_t> get_savedata() const;
+
+    [[nodiscard]] PublicKey self_get_dht_id() const;
+    [[nodiscard]] std::optional<std::uint16_t> self_get_udp_port() const;
 
 private:
     class Impl;

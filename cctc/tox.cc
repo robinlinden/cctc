@@ -113,6 +113,21 @@ public:
         return savedata;
     }
 
+    [[nodiscard]] PublicKey self_get_dht_id() const {
+        std::array<std::uint8_t, PublicKey::kByteSize> bytes;
+        tox_self_get_dht_id(tox_.get(), bytes.data());
+        return PublicKey{std::move(bytes)};
+    }
+
+    [[nodiscard]] std::optional<std::uint16_t> self_get_udp_port() const {
+        std::uint16_t maybe_port = tox_self_get_udp_port(tox_.get(), nullptr);
+        if (maybe_port == 0) {
+            return std::nullopt;
+        }
+
+        return std::make_optional<std::uint16_t>(maybe_port);
+    }
+
 private:
     std::unique_ptr<CTox, CToxDeleter> tox_{tox_new(nullptr, nullptr)};
 };
@@ -138,6 +153,14 @@ ToxID Tox::self_get_address() const {
 
 std::vector<std::uint8_t> Tox::get_savedata() const {
     return impl_->get_savedata();
+}
+
+PublicKey Tox::self_get_dht_id() const {
+    return impl_->self_get_dht_id();
+}
+
+std::optional<std::uint16_t> Tox::self_get_udp_port() const {
+    return impl_->self_get_udp_port();
 }
 
 } // namespace cctc
