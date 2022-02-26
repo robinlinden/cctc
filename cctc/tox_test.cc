@@ -59,9 +59,8 @@ auto save_and_load = make_test("saving/loading"sv, [] {
 });
 
 auto connect = make_test("bootstrapping/connecting"sv, [] {
-    static constexpr int kNumToxes = 3;
-    std::array<cctc::Tox, kNumToxes> toxes{};
-    std::array<cctc::Connection, kNumToxes> connection_statuses{};
+    std::array<cctc::Tox, 3> toxes{};
+    std::array<cctc::Connection, toxes.size()> connection_statuses{};
 
     auto dht_key = toxes.front().self_get_dht_id();
     auto dht_port = toxes.front().self_get_udp_port().value();
