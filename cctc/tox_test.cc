@@ -1,11 +1,14 @@
 #include "cctc/tox.h"
 
+#include "etest/etest.h"
+
 #include <algorithm>
 #include <array>
 #include <chrono>
 #include <cstdint>
 #include <iostream>
 #include <string>
+#include <string_view>
 #include <thread>
 #include <utility>
 
@@ -13,7 +16,12 @@ using namespace std::literals;
 
 namespace {
 
-bool test_tox_id() {
+void *make_test(std::string_view name, std::function<void()> body) {
+    etest::test(name, std::move(body));
+    return nullptr;
+}
+
+auto tox_id = make_test("tox id"sv, [] {
     cctc::Tox tox;
 
     auto id = tox.self_get_address();
@@ -24,9 +32,9 @@ bool test_tox_id() {
     auto new_id = cctc::ToxID{std::move(new_tox_id_bytes)};
 
     return new_id == id;
-}
+});
 
-bool test_public_key() {
+auto public_key = make_test("public key", [] {
     cctc::Tox tox;
 
     auto id = tox.self_get_address();
@@ -38,9 +46,9 @@ bool test_public_key() {
     auto new_pk = cctc::PublicKey{std::move(new_bytes)};
 
     return pk == new_pk;
-}
+});
 
-bool test_saving_and_loading() {
+auto save_and_load = make_test("saving/loading"sv, [] {
     cctc::Tox tox;
     auto id = tox.self_get_address();
     auto savedata = tox.get_savedata();
@@ -48,9 +56,9 @@ bool test_saving_and_loading() {
     cctc::Tox new_tox{cctc::Savedata{cctc::Savedata::Type::ToxSave, std::move(savedata)}};
     auto new_id = new_tox.self_get_address();
     return new_id == id;
-}
+});
 
-bool connecting_to_the_network() {
+auto connect = make_test("bootstrapping/connecting"sv, [] {
     static constexpr int kNumToxes = 3;
     std::array<cctc::Tox, kNumToxes> toxes{};
     std::array<cctc::Connection, kNumToxes> connection_statuses{};
@@ -80,29 +88,11 @@ bool connecting_to_the_network() {
     }
 
     return true;
-}
+});
 
 } // namespace
 
 int main() {
     std::cout << cctc::toxcore_version() << '\n';
-    if (!test_tox_id()) {
-        std::cout << "ToxID is broken.\n";
-        return 1;
-    }
-
-    if (!test_public_key()) {
-        std::cout << "PublicKey is broken.\n";
-        return 1;
-    }
-
-    if (!test_saving_and_loading()) {
-        std::cout << "Saving and loading is broken.\n";
-        return 1;
-    }
-
-    if (!connecting_to_the_network()) {
-        std::cout << "Connecting to the network is broken.\n";
-        return 1;
-    }
+    return etest::run_all_tests();
 }

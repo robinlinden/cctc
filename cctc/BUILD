@@ -11,5 +11,8 @@ cc_test(
     name = "cctc_test",
     size = "small",
     srcs = ["tox_test.cc"],
-    deps = [":cctc"],
+    deps = [
+        ":cctc",
+        "@hastur//etest",
+    ],
 )
