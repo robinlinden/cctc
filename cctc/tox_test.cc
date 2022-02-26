@@ -83,7 +83,7 @@ auto connect = make_test("bootstrapping/connecting"sv, [] {
             }
         }
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(toxes.front().iteration_interval()));
+        std::this_thread::sleep_for(toxes.front().iteration_interval());
     }
 
     return true;

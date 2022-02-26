@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cstdint>
 #include <cstring>
 #include <iomanip>
@@ -113,7 +114,7 @@ public:
 
     ToxErrBootstrap bootstrap(std::string const &host, std::uint16_t port, PublicKey const &);
 
-    [[nodiscard]] std::uint32_t iteration_interval() const;
+    [[nodiscard]] std::chrono::milliseconds iteration_interval() const;
     [[nodiscard]] std::vector<ToxEvent> events_iterate();
 
     [[nodiscard]] ToxID self_get_address() const;

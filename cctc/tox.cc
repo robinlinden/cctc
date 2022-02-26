@@ -88,8 +88,8 @@ public:
         return into(err);
     }
 
-    [[nodiscard]] std::uint32_t iteration_interval() const {
-        return tox_iteration_interval(tox_.get());
+    [[nodiscard]] std::chrono::milliseconds iteration_interval() const {
+        return std::chrono::milliseconds{tox_iteration_interval(tox_.get())};
     }
 
     [[nodiscard]] std::vector<ToxEvent> events_iterate() {
@@ -139,7 +139,7 @@ ToxErrBootstrap Tox::bootstrap(std::string const &host, std::uint16_t port, Publ
     return impl_->bootstrap(host, port, pk);
 }
 
-std::uint32_t Tox::iteration_interval() const {
+std::chrono::milliseconds Tox::iteration_interval() const {
     return impl_->iteration_interval();
 }
 
