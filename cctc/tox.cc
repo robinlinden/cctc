@@ -59,6 +59,13 @@ struct CToxDeleter {
         converted.emplace_back(SelfConnectionStatusEvent{status});
     }
 
+    for (std::uint32_t i = 0; i < tox_events_get_friend_connection_status_size(events); ++i) {
+        auto const *event = tox_events_get_friend_connection_status(events, i);
+        auto friend_no = tox_event_friend_connection_status_get_friend_number(event);
+        auto status = into(tox_event_friend_connection_status_get_connection_status(event));
+        converted.emplace_back(FriendConnectionStatusEvent{friend_no, status});
+    }
+
     return converted;
 }
 
@@ -128,6 +135,16 @@ public:
         return std::make_optional<std::uint16_t>(maybe_port);
     }
 
+    std::optional<std::uint32_t> friend_add_norequest(PublicKey const &pk) {
+        Tox_Err_Friend_Add err{};
+        std::uint32_t friend_no = tox_friend_add_norequest(tox_.get(), pk.bytes().data(), &err);
+        if (err != TOX_ERR_FRIEND_ADD_OK) {
+            return std::nullopt;
+        }
+
+        return friend_no;
+    }
+
 private:
     std::unique_ptr<CTox, CToxDeleter> tox_{tox_new(nullptr, nullptr)};
 };
@@ -161,6 +178,10 @@ PublicKey Tox::self_get_dht_id() const {
 
 std::optional<std::uint16_t> Tox::self_get_udp_port() const {
     return impl_->self_get_udp_port();
+}
+
+std::optional<std::uint32_t> Tox::friend_add_norequest(PublicKey const &pk) {
+    return impl_->friend_add_norequest(pk);
 }
 
 } // namespace cctc
