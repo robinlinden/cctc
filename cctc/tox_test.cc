@@ -94,8 +94,6 @@ auto save_and_load = make_test("saving/loading"sv, [] {
     return new_id == id;
 });
 
-auto connect = make_tox_test<3>("bootstrapping/connecting"sv, []([[maybe_unused]] auto &&toxes) {});
-
 auto friend_add_norequest = make_tox_test<3>("friend_send_message"sv, [](std::array<Tox, 3> &&toxes) {
     std::array<Connection, 2> connection_statuses{};
     std::array<std::uint32_t, 2> friend_numbers;
