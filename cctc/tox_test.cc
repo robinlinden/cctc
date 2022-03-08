@@ -67,7 +67,7 @@ auto tox_id = make_test("tox id"sv, [] {
     std::copy(bytes.begin(), bytes.end(), new_tox_id_bytes.begin());
     auto new_id = ToxID{std::move(new_tox_id_bytes)};
 
-    return new_id == id;
+    etest::expect_eq(new_id, id);
 });
 
 auto public_key = make_test("public key", [] {
@@ -81,7 +81,7 @@ auto public_key = make_test("public key", [] {
     std::copy(bytes.begin(), bytes.end(), new_bytes.begin());
     auto new_pk = PublicKey{std::move(new_bytes)};
 
-    return pk == new_pk;
+    etest::expect_eq(pk, new_pk);
 });
 
 auto save_and_load = make_test("saving/loading"sv, [] {
@@ -91,7 +91,7 @@ auto save_and_load = make_test("saving/loading"sv, [] {
 
     Tox new_tox{Savedata{Savedata::Type::ToxSave, std::move(savedata)}};
     auto new_id = new_tox.self_get_address();
-    return new_id == id;
+    etest::expect_eq(new_id, id);
 });
 
 auto friend_add_norequest = make_tox_test<3>("friend_send_message"sv, [](std::array<Tox, 3> &&toxes) {
@@ -142,8 +142,6 @@ auto friend_add_norequest = make_tox_test<3>("friend_send_message"sv, [](std::ar
 
         std::this_thread::sleep_for(toxes.front().iteration_interval());
     }
-
-    return true;
 });
 
 } // namespace
