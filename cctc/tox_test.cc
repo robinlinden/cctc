@@ -111,8 +111,8 @@ auto friend_add_norequest = make_tox_test<3>("friend_send_message"sv, [](std::ar
             for (auto const &event : events) {
                 if (auto const *connection_event = std::get_if<FriendConnectionStatusEvent>(&event)) {
                     etest::require(i < friend_numbers.size());
-                    etest::require_eq(connection_event->friend_number, friend_numbers[i]);
-                    etest::require_eq(connection_event->connection, Connection::Udp);
+                    etest::expect_eq(connection_event->friend_number, friend_numbers[i]);
+                    etest::expect_eq(connection_event->connection, Connection::Udp);
                     connection_statuses[i] = connection_event->connection;
                     break;
                 }
@@ -131,9 +131,9 @@ auto friend_add_norequest = make_tox_test<3>("friend_send_message"sv, [](std::ar
             for (auto const &event : events) {
                 if (auto const *msg_event = std::get_if<FriendMessageEvent>(&event)) {
                     etest::require(i < friend_numbers.size());
-                    etest::require_eq(msg_event->friend_number, friend_numbers[i]);
-                    etest::require_eq(msg_event->type, MessageType::Normal);
-                    etest::require_eq(msg_event->message, "hello?"sv);
+                    etest::expect_eq(msg_event->friend_number, friend_numbers[i]);
+                    etest::expect_eq(msg_event->type, MessageType::Normal);
+                    etest::expect_eq(msg_event->message, "hello?"sv);
                     received_message = true;
                     break;
                 }
