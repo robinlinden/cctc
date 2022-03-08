@@ -50,6 +50,22 @@ struct CToxDeleter {
     std::terminate();
 }
 
+[[nodiscard]] constexpr MessageType into(Tox_Message_Type type) {
+    switch (type) {
+        case TOX_MESSAGE_TYPE_NORMAL: return MessageType::Normal;
+        case TOX_MESSAGE_TYPE_ACTION: return MessageType::Action;
+    }
+    std::terminate();
+}
+
+[[nodiscard]] constexpr Tox_Message_Type into(MessageType type) {
+    switch (type) {
+        case MessageType::Normal: return TOX_MESSAGE_TYPE_NORMAL;
+        case MessageType::Action: return TOX_MESSAGE_TYPE_ACTION;
+    }
+    std::terminate();
+}
+
 [[nodiscard]] std::vector<ToxEvent> into(Tox_Events const *events) {
     std::vector<ToxEvent> converted;
 
@@ -64,6 +80,16 @@ struct CToxDeleter {
         auto friend_no = tox_event_friend_connection_status_get_friend_number(event);
         auto status = into(tox_event_friend_connection_status_get_connection_status(event));
         converted.emplace_back(FriendConnectionStatusEvent{friend_no, status});
+    }
+
+    for (std::uint32_t i = 0; i < tox_events_get_friend_message_size(events); ++i) {
+        auto const *event = tox_events_get_friend_message(events, i);
+        auto friend_no = tox_event_friend_message_get_friend_number(event);
+        auto type = into(tox_event_friend_message_get_type(event));
+        auto message = std::string{
+                reinterpret_cast<char const *>(tox_event_friend_message_get_message(event)),
+                tox_event_friend_message_get_message_length(event)};
+        converted.emplace_back(FriendMessageEvent{friend_no, type, std::move(message)});
     }
 
     return converted;
@@ -145,6 +171,16 @@ public:
         return friend_no;
     }
 
+    std::uint32_t friend_send_message(std::uint32_t friend_number, MessageType type, std::string_view message) {
+        return tox_friend_send_message(
+                tox_.get(),
+                friend_number,
+                into(type),
+                reinterpret_cast<std::uint8_t const *>(message.data()),
+                message.size(),
+                nullptr);
+    }
+
 private:
     std::unique_ptr<CTox, CToxDeleter> tox_{tox_new(nullptr, nullptr)};
 };
@@ -182,6 +218,10 @@ std::optional<std::uint16_t> Tox::self_get_udp_port() const {
 
 std::optional<std::uint32_t> Tox::friend_add_norequest(PublicKey const &pk) {
     return impl_->friend_add_norequest(pk);
+}
+
+std::uint32_t Tox::friend_send_message(std::uint32_t friend_number, MessageType type, std::string_view message) {
+    return impl_->friend_send_message(friend_number, type, message);
 }
 
 } // namespace cctc

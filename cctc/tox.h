@@ -101,6 +101,11 @@ enum class Connection {
     Udp,
 };
 
+enum class MessageType {
+    Normal,
+    Action,
+};
+
 struct SelfConnectionStatusEvent {
     Connection connection{Connection::None};
 };
@@ -110,9 +115,16 @@ struct FriendConnectionStatusEvent {
     Connection connection{Connection::None};
 };
 
+struct FriendMessageEvent {
+    std::uint32_t friend_number{};
+    MessageType type{};
+    std::string message{};
+};
+
 using ToxEvent = std::variant<
         SelfConnectionStatusEvent,
-        FriendConnectionStatusEvent
+        FriendConnectionStatusEvent,
+        FriendMessageEvent
     >;
 
 class Tox {
@@ -133,6 +145,7 @@ public:
 
     // TODO(robinlinden): Error handling.
     std::optional<std::uint32_t> friend_add_norequest(PublicKey const &);
+    std::uint32_t friend_send_message(std::uint32_t friend_number, MessageType, std::string_view message);
 
 private:
     class Impl;

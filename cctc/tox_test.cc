@@ -96,7 +96,7 @@ auto save_and_load = make_test("saving/loading"sv, [] {
 
 auto connect = make_tox_test<3>("bootstrapping/connecting"sv, []([[maybe_unused]] auto &&toxes) {});
 
-auto friend_add_norequest = make_tox_test<3>("friend_add_norequest"sv, [](std::array<Tox, 3> &&toxes) {
+auto friend_add_norequest = make_tox_test<3>("friend_send_message"sv, [](std::array<Tox, 3> &&toxes) {
     std::array<Connection, 2> connection_statuses{};
     std::array<std::uint32_t, 2> friend_numbers;
     connection_statuses[0] = Connection::None;
@@ -116,6 +116,27 @@ auto friend_add_norequest = make_tox_test<3>("friend_add_norequest"sv, [](std::a
                     etest::require_eq(connection_event->friend_number, friend_numbers[i]);
                     etest::require_eq(connection_event->connection, Connection::Udp);
                     connection_statuses[i] = connection_event->connection;
+                    break;
+                }
+            }
+        }
+
+        std::this_thread::sleep_for(toxes.front().iteration_interval());
+    }
+
+    toxes[0].friend_send_message(friend_numbers[0], MessageType::Normal, "hello?"sv);
+
+    bool received_message{false};
+    while (!received_message) {
+        for (int i = 0; i < toxes.size(); ++i) {
+            auto events = toxes[i].events_iterate();
+            for (auto const &event : events) {
+                if (auto const *msg_event = std::get_if<FriendMessageEvent>(&event)) {
+                    etest::require(i < friend_numbers.size());
+                    etest::require_eq(msg_event->friend_number, friend_numbers[i]);
+                    etest::require_eq(msg_event->type, MessageType::Normal);
+                    etest::require_eq(msg_event->message, "hello?"sv);
+                    received_message = true;
                     break;
                 }
             }
