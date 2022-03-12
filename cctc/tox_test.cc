@@ -22,39 +22,32 @@ void *make_test(std::string_view name, std::function<void()> body) {
     return nullptr;
 }
 
-template<int CountT>
-void *make_tox_test(std::string_view name, auto test_body) {
-    etest::test(name, [body = std::move(test_body)] {
-        std::array<Tox, CountT> toxes{};
-        std::array<Connection, toxes.size()> connection_statuses{};
+void bootstrap(auto &toxes) {
+    std::vector<Connection> connection_statuses{toxes.size(), Connection::None};
 
-        auto dht_key = toxes.front().self_get_dht_id();
-        auto dht_port = toxes.front().self_get_udp_port().value();
+    auto dht_key = toxes.front().self_get_dht_id();
+    auto dht_port = toxes.front().self_get_udp_port().value();
 
-        for (int i = 1; i < toxes.size(); ++i) {
-            toxes[i].bootstrap("localhost"s, dht_port, dht_key);
-        }
+    for (int i = 1; i < toxes.size(); ++i) {
+        toxes[i].bootstrap("localhost"s, dht_port, dht_key);
+    }
 
-        while (std::any_of(
-                cbegin(connection_statuses),
-                cend(connection_statuses),
-                [](auto status) { return status == Connection::None; })) {
-            for (int i = 0; i < toxes.size(); ++i) {
-                auto events = toxes[i].events_iterate();
-                for (auto const &event : events) {
-                    if (auto const *connection_event = std::get_if<SelfConnectionStatusEvent>(&event)) {
-                        connection_statuses[i] = connection_event->connection;
-                        break;
-                    }
+    while (std::any_of(
+            cbegin(connection_statuses),
+            cend(connection_statuses),
+            [](auto status) { return status == Connection::None; })) {
+        for (int i = 0; i < toxes.size(); ++i) {
+            auto events = toxes[i].events_iterate();
+            for (auto const &event : events) {
+                if (auto const *connection_event = std::get_if<SelfConnectionStatusEvent>(&event)) {
+                    connection_statuses[i] = connection_event->connection;
+                    break;
                 }
             }
-
-            std::this_thread::sleep_for(toxes.front().iteration_interval());
         }
 
-        body(std::move(toxes));
-    });
-    return nullptr;
+        std::this_thread::sleep_for(toxes.front().iteration_interval());
+    }
 }
 
 auto tox_id = make_test("tox id"sv, [] {
@@ -94,7 +87,10 @@ auto save_and_load = make_test("saving/loading"sv, [] {
     etest::expect_eq(new_id, id);
 });
 
-auto friend_add_norequest = make_tox_test<3>("friend_send_message"sv, [](std::array<Tox, 3> &&toxes) {
+auto friend_add_norequest = make_test("friend_send_message"sv, [] {
+    std::array<Tox, 3> toxes;
+    bootstrap(toxes);
+
     std::array<Connection, 2> connection_statuses{};
     std::array<std::uint32_t, 2> friend_numbers;
     connection_statuses[0] = Connection::None;
