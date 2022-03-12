@@ -88,7 +88,7 @@ auto save_and_load = make_test("saving/loading"sv, [] {
 });
 
 auto friend_add_norequest = make_test("friend_send_message"sv, [] {
-    std::array<Tox, 3> toxes;
+    std::array<Tox, 2> toxes;
     bootstrap(toxes);
 
     std::array<Connection, 2> connection_statuses{};
