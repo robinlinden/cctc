@@ -52,7 +52,7 @@ http_archive(
         "rm toxcore/BUILD.bazel",
         "rm toxencryptsave/BUILD.bazel",
     ],
-    sha256 = "653aa42654b607f0940cecfac873e9ce55605119a90d1dc454d1090ff6ca29c0",
-    strip_prefix = "c-toxcore-0.2.16",
-    url = "https://github.com/TokTok/c-toxcore/archive/v0.2.16.tar.gz",
+    sha256 = "d9cdf5d690fe8e217dcaba5b988fb943bbe7bda919a2fde6d9506df047e5f4cb",
+    strip_prefix = "c-toxcore-0.2.17",
+    url = "https://github.com/TokTok/c-toxcore/archive/v0.2.17.tar.gz",
 )
