@@ -140,6 +140,14 @@ auto friend_add_norequest = make_test("friend_send_message"sv, [] {
     }
 });
 
+auto name = make_test("name"sv, [] {
+    Tox tox;
+    etest::expect_eq(tox.self_get_name().size(), 0);
+    etest::expect(tox.self_set_name("arch"sv));
+    etest::expect_eq(tox.self_get_name().size(), 4);
+    etest::expect_eq(tox.self_get_name(), "arch"sv);
+});
+
 } // namespace
 } // namespace cctc
 

@@ -12,6 +12,7 @@
 #include <span>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -142,6 +143,10 @@ public:
 
     [[nodiscard]] PublicKey self_get_dht_id() const;
     [[nodiscard]] std::optional<std::uint16_t> self_get_udp_port() const;
+
+    // TODO(robinlinden): Error handling.
+    bool self_set_name(std::string_view);
+    [[nodiscard]] std::string self_get_name() const;
 
     // TODO(robinlinden): Error handling.
     std::optional<std::uint32_t> friend_add_norequest(PublicKey const &);

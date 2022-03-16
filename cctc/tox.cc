@@ -161,6 +161,20 @@ public:
         return std::make_optional<std::uint16_t>(maybe_port);
     }
 
+    bool self_set_name(std::string_view name) {
+        return tox_self_set_name(
+                tox_.get(),
+                reinterpret_cast<std::uint8_t const *>(name.data()),
+                name.size(),
+                nullptr);
+    }
+
+    [[nodiscard]] std::string self_get_name() const {
+        auto name = std::string(tox_self_get_name_size(tox_.get()), '\0');
+        tox_self_get_name(tox_.get(), reinterpret_cast<std::uint8_t *>(name.data()));
+        return name;
+    }
+
     std::optional<std::uint32_t> friend_add_norequest(PublicKey const &pk) {
         Tox_Err_Friend_Add err{};
         std::uint32_t friend_no = tox_friend_add_norequest(tox_.get(), pk.bytes().data(), &err);
@@ -214,6 +228,14 @@ PublicKey Tox::self_get_dht_id() const {
 
 std::optional<std::uint16_t> Tox::self_get_udp_port() const {
     return impl_->self_get_udp_port();
+}
+
+bool Tox::self_set_name(std::string_view name) {
+    return impl_->self_set_name(name);
+}
+
+std::string Tox::self_get_name() const {
+    return impl_->self_get_name();
 }
 
 std::optional<std::uint32_t> Tox::friend_add_norequest(PublicKey const &pk) {
