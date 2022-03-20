@@ -4,6 +4,7 @@ cc_library(
     name = "cctc",
     srcs = ["tox.cc"],
     hdrs = ["tox.h"],
+    visibility = ["//visibility:public"],
     deps = ["@toxcore"],
 )
 
