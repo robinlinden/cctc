@@ -1,5 +1,16 @@
 load("@rules_cc//cc:defs.bzl", "cc_library")
 
+# cmp
+# =========================================================
+
+cc_library(
+    name = "cmp",
+    srcs = ["third_party/cmp/cmp.c"],
+    hdrs = ["third_party/cmp/cmp.h"],
+    strip_include_prefix = "third_party/",
+    visibility = ["//visibility:public"],
+)
+
 # toxcore
 # =========================================================
 
@@ -35,9 +46,9 @@ cc_library(
     strip_include_prefix = "toxcore",
     visibility = ["//visibility:public"],
     deps = [
+        ":cmp",
         ":toxencryptsave_defines",
         "@libsodium",
-        "@msgpack-c",
         "@pthread",
     ],
 )
