@@ -26,7 +26,7 @@ jobs:
         echo "CXX=clang++-${{ matrix.version }}" >> $GITHUB_ENV
     - uses: actions/checkout@v2
     - name: Build and test
-      run: bazel test ... --config gnulike
+      run: bazel test ...
 
   windows-msvc:
     runs-on: windows-2022
@@ -36,14 +36,14 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build and test
-      run: bazel test ... --config msvc
+      run: bazel test ...
 
   linux-gcc-10-coverage:
     runs-on: ubuntu-20.04
     steps:
     - uses: actions/checkout@v2
     - name: Coverage
-      run: CC=gcc-10 CXX=g++-10 bazel coverage --combined_report=lcov --config=gnulike ...
+      run: CC=gcc-10 CXX=g++-10 bazel coverage --combined_report=lcov ...
     - name: Upload
       run: bash <(curl -s https://codecov.io/bash) -f bazel-out/_coverage/_coverage_report.dat
 

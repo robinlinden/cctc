@@ -7,14 +7,15 @@ build --incompatible_disallow_empty_glob
 # Bazel configuration
 # =========================================================
 
+build --enable_platform_specific_config
 test --test_output=errors
 
 # Compiler configuration
 # =========================================================
 
-build:gnulike --cxxopt='-std=c++20'
+build:linux --cxxopt='-std=c++20'
 
-build:msvc --cxxopt='/std:c++20'
+build:windows --cxxopt='/std:c++20'
 
 # Misc configuration
 # =========================================================
