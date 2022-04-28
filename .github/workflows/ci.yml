@@ -24,7 +24,7 @@ jobs:
       run: |
         echo "CC=clang-${{ matrix.version }}" >> $GITHUB_ENV
         echo "CXX=clang++-${{ matrix.version }}" >> $GITHUB_ENV
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Build and test
       run: bazel test ...
 
@@ -34,14 +34,14 @@ jobs:
       run:
         shell: bash
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Build and test
       run: bazel test ...
 
   linux-gcc-10-coverage:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Coverage
       run: CC=gcc-10 CXX=g++-10 bazel coverage --combined_report=lcov ...
     - name: Upload
@@ -50,7 +50,7 @@ jobs:
   buildifier:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Install
       run: |
         wget --output-document=buildifier https://github.com/bazelbuild/buildtools/releases/download/5.0.1/buildifier-linux-amd64
